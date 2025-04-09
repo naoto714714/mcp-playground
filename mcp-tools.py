@@ -1,22 +1,43 @@
-"""
-Simple Echo MCP Server
-This example demonstrates a basic MCP server that exposes a simple echo tool.
-"""
+import random
 
+import requests
 from mcp.server.fastmcp import FastMCP
 
-# MCPサーバを作成
-mcp = FastMCP("Echo Server")
+mcp = FastMCP("Naoto-MCP-Server")  # 適当なサーバー名
 
 
-# テキストをエコーバックするツールを定義
+@mcp.resource("lucky-color://static")  # 適当なパス
+def get_lucky_color() -> str:
+    """今日のラッキーカラーを取得する"""
+    return random.choice(["赤", "青", "緑", "黄"])
+
+
 @mcp.tool()
-def echo(text: str) -> str:
-    """Echo the input text back to the caller."""
-    return f"Echo: {text}"
+def fetch_html(url: str) -> str:
+    """
+    指定されたURLからHTMLを取得して返します。
+
+    Args:
+        url (str):  取得対象のウェブページのURL
+
+    Returns:
+        str: 取得したHTML
+    """
+    response = requests.get(url)
+    return response.text
 
 
-# サーバを実行（スクリプト直接実行時）
+from mcp.server.fastmcp.prompts import base
+
+"""
+@mcp.prompt()
+def debug_error(error: str) -> list[base.Message]:
+    return [
+        base.UserMessage("以下のエラーメッセージが出ました:"),
+        base.UserMessage(error),
+        base.AssistantMessage("私はエラーメッセージを読み解き、適切な対処を教えます"),
+    ]
+"""
+
 if __name__ == "__main__":
-    # デフォルトでstdioトランスポートを使用してサーバを起動
     mcp.run()

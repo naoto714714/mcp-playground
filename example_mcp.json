@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+      "naoto-mcp-server": {
+        "command": "<uvのパス(which uv)>",
+        "args": [
+          "--directory",
+          "<mcp-tools.pyのあるディレクトリ>",
+          "run",
+          "mcp-tools.py"
+        ]
+      }
+    }
+  }

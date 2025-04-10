@@ -29,15 +29,16 @@ def fetch_html(url: str) -> str:
 
 from mcp.server.fastmcp.prompts import base
 
-"""
+
 @mcp.prompt()
-def debug_error(error: str) -> list[base.Message]:
+def error_analysis_prompt(error: str) -> list[base.Message]:
+    """エラーメッセージを解析するときのプロンプト"""
     return [
         base.UserMessage("以下のエラーメッセージが出ました:"),
         base.UserMessage(error),
-        base.AssistantMessage("私はエラーメッセージを読み解き、適切な対処を教えます"),
+        base.AssistantMessage("エラーメッセージを読み対処方法を教えます"),
     ]
-"""
+
 
 if __name__ == "__main__":
     mcp.run()

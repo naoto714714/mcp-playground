@@ -3,7 +3,7 @@ import random
 import requests
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("Naoto-MCP-Server")  # 適当なサーバー名
+mcp = FastMCP("mcp-playground")  # 適当なサーバー名
 
 
 @mcp.resource("lucky-color://static")  # 適当なパス

@@ -1,6 +1,6 @@
 {
     "mcpServers": {
-      "naoto-mcp-server": {
+      "mcp-playground": {
         "command": "<uvのパス(which uv)>",
         "args": [
           "--directory",

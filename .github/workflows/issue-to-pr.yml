@@ -6,7 +6,6 @@ on:
 
 jobs:
   implement:
-    if: (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -81,5 +81,5 @@ jobs:
             Be thorough but efficient. Focus on finding true duplicates, not just similar issues.
 
           claude_args: |
-            --model jp.anthropic.claude-sonnet-4-5-20250929-v1:0
+            --model jp.anthropic.claude-haiku-4-5-20251001-v1:0
             --allowedTools "mcp__github__get_issue,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__get_issue_comments"

@@ -9,7 +9,7 @@ mcp = FastMCP("mcp-playground")  # 適当なサーバー名
 @mcp.resource("lucky-color://static")  # 適当なパス
 def get_lucky_color() -> str:
     """今日のラッキーカラーを取得する"""
-    return random.choice(["赤", "青", "緑", "黄"])
+    return random.choice(["赤", "青", "緑", "黄", "紫"])
 
 
 @mcp.tool()

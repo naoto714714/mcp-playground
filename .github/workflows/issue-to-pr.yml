@@ -52,4 +52,4 @@ jobs:
             If it appears to be a duplicate, post a comment mentioning the original issue.
           claude_args: |
             --model jp.anthropic.claude-haiku-4-5-20251001-v1:0
-            --allowedTools Bash(gh issue:*)
+            --allowedTools "Bash(gh issue:*)"

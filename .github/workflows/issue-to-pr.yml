@@ -10,6 +10,7 @@ env:
   AWS_REGION: ap-northeast-1
   ROLE_ARN: arn:aws:iam::886789338663:role/github-actions-claude-code
   ROLE_SESSION_NAME: github-actions-${{ github.run_id }}
+  DEFAULT_CLAUDE_MODEL: jp.anthropic.claude-haiku-4-5-20251001-v1:0
 
 jobs:
   claude:
@@ -17,6 +18,7 @@ jobs:
       (github.event_name == 'issues' && contains(github.event.issue.body, '@claude')) ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       id-token: write
@@ -34,23 +36,45 @@ jobs:
           role-to-assume: ${{ env.ROLE_ARN }}
           role-session-name: ${{ env.ROLE_SESSION_NAME }}
 
+      - name: Set Claude Model
+        run: |
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            BODY="${{ github.event.issue.body }}"
+          else
+            BODY="${{ github.event.comment.body }}"
+          fi
+
+          MODEL_NAME=$(echo "$BODY" | grep -oE 'model=[A-Za-z0-9._:-]+' | head -n 1 | cut -d= -f2 | tr -d '\r\n')
+
+          case "$MODEL_NAME" in
+            sonnet) CLAUDE_MODEL="jp.anthropic.claude-sonnet-4-5-20250929-v1:0" ;;
+            opus)   CLAUDE_MODEL="global.anthropic.claude-opus-4-5-20251101-v1:0" ;;
+            haiku) CLAUDE_MODEL="${{ env.DEFAULT_CLAUDE_MODEL }}" ;;
+            *) CLAUDE_MODEL="${{ env.DEFAULT_CLAUDE_MODEL }}" ;;
+          esac
+
+          echo "Using CLAUDE_MODEL: $CLAUDE_MODEL"
+          echo "CLAUDE_MODEL=$CLAUDE_MODEL" >> $GITHUB_ENV
+
       - uses: anthropics/claude-code-action@v1
         with:
           use_bedrock: "true"
           prompt: |
             REPO: ${{ github.repository }}
             ISSUE NUMBER: ${{ github.event.issue.number }}
-            TITLE: ${{ github.event.issue.title }}
-            BODY: ${{ github.event.issue.body }}
-            AUTHOR: ${{ github.event.issue.user.login }}
 
             issueの内容を確認し、必要な修正を行い、プルリクエストを作成してください
-            使用できるツール：
-            - mcp__github__get_issue: issueの情報を取得する
-            - mcp__github__create_branch: 新しいブランチを作成する
-            - mcp__github__create_pull_request: プルリクエストを作成する
-            - mcp__github__push_files: ファイルをプッシュする
+            issueの取得、ブランチの作成、プルリクエストの作成などの操作は、GitHub MCPツールを使用してください
 
           claude_args: |
-            --model jp.anthropic.claude-haiku-4-5-20251001-v1:0
-            --allowedTools "Read,Write,Edit,mcp__github__get_issue,mcp__github__create_branch,mcp__github__create_pull_request,mcp__github__add_issue_comment,mcp__github__push_files"
+            --model ${{ env.CLAUDE_MODEL }}
+            --allowedTools "
+              Read,
+              Write,
+              Edit,
+              mcp__github__get_issue,
+              mcp__github__create_branch,
+              mcp__github__create_pull_request,
+              mcp__github__add_issue_comment,
+              mcp__github__push_files
+            "
